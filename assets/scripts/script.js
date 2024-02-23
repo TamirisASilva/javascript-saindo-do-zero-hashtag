@@ -45,7 +45,7 @@ const musicLibary = [rbd, edSheeran, deanLewis, jamesArthur, justinBieber];
 
 let songs = [...musicLibary];
 
-let playList = [rbd, edSheeran, deanLewis, jamesArthur, justinBieber]
+let playList = JSON.parse(localStorage.getItem('playlist')) ?? [];
 
 const pageBody = document.getElementById('page-body');
 const searchTerm = document.getElementById('search-term');
@@ -63,7 +63,7 @@ function loadLibary() {
             class="card-title">${songs[index].songName}</h5>
             <p class="card-text">${songs[index].album}</p>
             <p class="card-text">${songs[index].artist}
-            </p><button class="btn btn-outline-success" onclick="addToPlayList('${songs[index].id}')">
+            </p><button class="btn btn-outline-success" onclick="addToPlaylist('${songs[index].id}')">
             <i class="bi bi-plus-circle"></i></button></div></div>`;
     }
 }
@@ -73,7 +73,7 @@ function loadPlayList() {
     for (let index = 0; index < playList.length; index++) {
         playlistElement.innerHTML += `<p id=${playList[index].id} class="d-flex justify-content-between border-top border-bottom align-items-center">
         ${playList[index].songName} -
-        ${playList[index].artist} <button class="btn btn-outline-danger" onclick="removeFromPlaylis('${playList[index].id}')"><i class="bi bi-trash3"></i></button>
+        ${playList[index].artist} <button class="btn btn-outline-danger" onclick="removeFromPlaylist('${playList[index].id}')"><i class="bi bi-trash3"></i></button>
     </p>`
 
     }
@@ -92,20 +92,26 @@ loadLibary();
 function removeFromPlaylist(songId) {
     playList = playList.filter((song) => song.id !== songId);
     document.getElementById(songId).remove();
+    updateLocalStorage();
 }
 function addToPlaylist(songId) {
-    if (playList.find((song) => song.id === song.id)) return;
+    if (playList.find((song) => song.id === songId)) return;
     const songToAdd = songs.find(x => x.id === `${songId}`);
     playList.push(songToAdd);
     loadPlayList();
+    updateLocalStorage()
 }
 
 function resetFilter() {
-    if (searchTerm.value === '')
-        {songs = [...musicLibary];
+    if (searchTerm.value === '') {
+        songs = [...musicLibary];
         loadLibary();
     }
 
+}
+
+function updateLocalStorage() {
+    localStorage.setItem('playlist', JSON.stringify(playList));
 }
 
 searchButton.addEventListener('click', searchClick);
